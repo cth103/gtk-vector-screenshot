@@ -29,6 +29,8 @@ GdkAtom pdfscreenshot_atom;
 char *supported_str = "supported";
 
 GtkWindow *main_window;
+static GtkWidget* enable_delay = NULL;
+
 
 gboolean
 request_screenshot(GtkWidget *grab_window,
@@ -95,6 +97,12 @@ static
 gboolean
 take_screenshot_clicked(GtkWidget *button, GdkEvent *event, GtkWidget *grab_window)
 {
+    if (gtk_toggle_button_get_active(enable_delay)) {
+        g_timeout_add_seconds(5, request_screenshot, NULL);
+        // No need for crosshairs or anything
+        return TRUE;
+    }
+
     GdkEventMask events = GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK;
 
     // Create a crosshair cursor
@@ -117,15 +125,16 @@ take_screenshot_clicked(GtkWidget *button, GdkEvent *event, GtkWidget *grab_wind
 }
 
 
-/*
- * The main window, with the one button.
- */
 void
 pdfscreenshot_window_create()
 {
     // Is that icon always installed or do we have to ship it?
     GtkWidget *icon = gtk_image_new_from_icon_name ("camera",GTK_ICON_SIZE_BUTTON);
     gtk_image_set_pixel_size(GTK_IMAGE(icon), 128);
+
+    GtkWidget* box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+
+    enable_delay = gtk_check_button_new_with_label("Delay by 5 seconds");
 
     GtkWidget *take_screenshot = gtk_button_new_with_label("Take vector screenshot...");
     gtk_button_set_image (GTK_BUTTON(take_screenshot), icon);
@@ -142,7 +151,9 @@ pdfscreenshot_window_create()
     gtk_window_set_title(GTK_WINDOW(window),"Vector screenshot taker");
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
     gtk_window_set_keep_above(GTK_WINDOW(window),TRUE);
-    gtk_container_add(GTK_CONTAINER(window), take_screenshot);
+    gtk_container_add(GTK_CONTAINER(window), box);
+    gtk_container_add(GTK_CONTAINER(box), enable_delay);
+    gtk_container_add(GTK_CONTAINER(box), take_screenshot);
     gtk_widget_show_all(GTK_WIDGET(window));
     main_window = GTK_WINDOW(window);
 
@@ -160,7 +171,6 @@ pdfscreenshot_window_create()
         G_CALLBACK(request_screenshot), take_screenshot);
     g_signal_connect(G_OBJECT(take_screenshot), "button_release_event",
         G_CALLBACK(take_screenshot_clicked), grab_window);
-
 }
 
 int
