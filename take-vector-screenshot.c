@@ -132,11 +132,11 @@ pdfscreenshot_window_create()
     GtkWidget *icon = gtk_image_new_from_icon_name ("camera",GTK_ICON_SIZE_BUTTON);
     gtk_image_set_pixel_size(GTK_IMAGE(icon), 128);
 
-    GtkWidget *button = gtk_button_new_with_label("Take vector screenshot...");
-    gtk_button_set_image (GTK_BUTTON(button), icon);
-    gtk_widget_set_can_focus(button, False);
-    gtk_button_set_image_position (GTK_BUTTON(button), GTK_POS_TOP);
-    gtk_widget_set_tooltip_text (button,
+    GtkWidget *take_screenshot = gtk_button_new_with_label("Take vector screenshot...");
+    gtk_button_set_image (GTK_BUTTON(take_screenshot), icon);
+    gtk_widget_set_can_focus(take_screenshot, False);
+    gtk_button_set_image_position(GTK_BUTTON(take_screenshot), GTK_POS_TOP);
+    gtk_widget_set_tooltip_text(take_screenshot,
         "Click this button and then an application window to take "
         "a vector screenshot of it.");
 
@@ -147,7 +147,7 @@ pdfscreenshot_window_create()
     gtk_window_set_title(GTK_WINDOW(window),"Vector screenshot taker");
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
     gtk_window_set_keep_above(GTK_WINDOW(window),TRUE);
-    gtk_container_add(GTK_CONTAINER(window), button);
+    gtk_container_add(GTK_CONTAINER(window), take_screenshot);
     gtk_widget_show_all(GTK_WIDGET(window));
     main_window = GTK_WINDOW(window);
 
@@ -162,8 +162,8 @@ pdfscreenshot_window_create()
     gtk_widget_add_events(grab_window, events);
 
     g_signal_connect(G_OBJECT(grab_window), "button_release_event",
-        G_CALLBACK(pdfscreenshot_window_selected), button);
-    g_signal_connect(G_OBJECT(button), "button_release_event",
+        G_CALLBACK(pdfscreenshot_window_selected), take_screenshot);
+    g_signal_connect(G_OBJECT(take_screenshot), "button_release_event",
         G_CALLBACK(pdfscreenshot_select_window), grab_window);
 
 }
