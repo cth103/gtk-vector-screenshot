@@ -94,11 +94,9 @@ pdfscreenshot_window_selected(GtkWidget *grab_window,
 }
 
 
-/*
- * Called when the main button is pressed.
- */
+static
 gboolean
-pdfscreenshot_select_window(GtkWidget *button, GdkEvent *event, GtkWidget *grab_window)
+take_screenshot_clicked(GtkWidget *button, GdkEvent *event, GtkWidget *grab_window)
 {
     GdkEventMask events = GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK;
 
@@ -164,7 +162,7 @@ pdfscreenshot_window_create()
     g_signal_connect(G_OBJECT(grab_window), "button_release_event",
         G_CALLBACK(pdfscreenshot_window_selected), take_screenshot);
     g_signal_connect(G_OBJECT(take_screenshot), "button_release_event",
-        G_CALLBACK(pdfscreenshot_select_window), grab_window);
+        G_CALLBACK(take_screenshot_clicked), grab_window);
 
 }
 
