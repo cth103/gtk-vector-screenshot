@@ -62,7 +62,7 @@ pdfscreenshot_window_selected(GtkWidget *grab_window,
         // Now we check if the window has the GTK_VECTOR_SCREENSHOT atom set
         XTextProperty supported;
         XGetTextProperty(gdk_x11_get_default_xdisplay(),
-            selected_window, 
+            selected_window,
             &supported,
             gdk_x11_atom_to_xatom(pdfscreenshot_atom));
         if (supported.value != NULL) {
@@ -141,7 +141,7 @@ pdfscreenshot_window_create()
         "a vector screenshot of it.");
 
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_accept_focus(window, False);
+    gtk_window_set_accept_focus(GTK_WINDOW(window), False);
 
     gtk_window_set_icon_name(GTK_WINDOW(window),"camera");
     gtk_window_set_title(GTK_WINDOW(window),"Vector screenshot taker");
@@ -149,7 +149,7 @@ pdfscreenshot_window_create()
     gtk_window_set_keep_above(GTK_WINDOW(window),TRUE);
     gtk_container_add(GTK_CONTAINER(window), button);
     gtk_widget_show_all(GTK_WIDGET(window));
-    main_window = window;
+    main_window = GTK_WINDOW(window);
 
     // Create a dummy window for the pointer grab
     // (maybe try to remove this later)
