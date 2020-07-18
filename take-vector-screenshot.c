@@ -30,11 +30,8 @@ char *supported_str = "supported";
 
 GtkWindow *main_window;
 
-/*
- * This is called once a window has been clicked.
- */
 gboolean
-pdfscreenshot_window_selected(GtkWidget *grab_window,
+request_screenshot(GtkWidget *grab_window,
                   GdkEventButton *event,
                   GtkButton *button)
 {
@@ -160,7 +157,7 @@ pdfscreenshot_window_create()
     gtk_widget_add_events(grab_window, events);
 
     g_signal_connect(G_OBJECT(grab_window), "button_release_event",
-        G_CALLBACK(pdfscreenshot_window_selected), take_screenshot);
+        G_CALLBACK(request_screenshot), take_screenshot);
     g_signal_connect(G_OBJECT(take_screenshot), "button_release_event",
         G_CALLBACK(take_screenshot_clicked), grab_window);
 
