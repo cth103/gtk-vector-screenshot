@@ -169,7 +169,7 @@ pdfscreenshot_take_shot(GtkWindow *window) {
                               "ps", "Save as PostScript (*.ps)");
     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(format_combo),
                               "png", "Save as PNG (*.png)");
-    // When this changes, we call pdfscreenshot_type_selected. 
+    // When this changes, we call pdfscreenshot_type_selected.
     g_signal_connect(GTK_COMBO_BOX(format_combo), "changed",
                      G_CALLBACK(pdfscreenshot_type_selected), chooser);
     // Default to PDF
@@ -211,66 +211,6 @@ pdfscreenshot_take_shot_soon(gpointer window) {
 }
 
 /*
- * Called when the main button is pressed. Finds the main window, and calls
- * pdfscreenshot_take_shot.
- */
-void
-pdfscreenshot_find_window(GtkButton *button, gpointer our_window) {
-    GList *toplevels = gtk_window_list_toplevels();
-
-    for (GList *iter = toplevels; iter; iter = g_list_next(iter)) {
-        GtkWindow *window = GTK_WINDOW(iter->data);
-        const gchar *title = gtk_window_get_title(window);
-        if (our_window != window && title != NULL) {
-            // This seems to be the "other" window that we want to shoot, so
-            // grab hold of it
-            g_object_ref(window);
-            pdfscreenshot_take_shot(window);
-            g_object_unref(window);
-            g_list_free(toplevels);
-            return;
-        }
-    }
-    g_list_free(toplevels);
-
-    // If we reach here, then we did not find a main window. Inform the user
-    // about it.
-    GtkWidget *dialog = gtk_message_dialog_new(our_window,
-                                               GTK_DIALOG_DESTROY_WITH_PARENT,
-                                               GTK_MESSAGE_ERROR,
-                                               GTK_BUTTONS_CLOSE,
-                                               "No main window found.");
-    gtk_dialog_run(GTK_DIALOG (dialog));
-    gtk_widget_destroy(dialog);
-}
-
-/*
- * The main window, with the one button.
- */
-void
-pdfscreenshot_window_create() {
-    // Is that icon always installed or do we have to ship it?
-    GtkWidget *icon = gtk_image_new_from_icon_name("camera", GTK_ICON_SIZE_BUTTON);
-    gtk_image_set_pixel_size(GTK_IMAGE(icon), 128);
-
-    GtkWidget *button = gtk_button_new_with_label("Take vector screenshot...");
-    gtk_button_set_image(GTK_BUTTON(button), icon);
-    gtk_button_set_image_position(GTK_BUTTON(button), GTK_POS_TOP);
-
-    GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_icon_name(GTK_WINDOW(window), "camera");
-    gtk_window_set_title(GTK_WINDOW(window), "Vector screenshot taker");
-    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-    gtk_window_set_keep_above(GTK_WINDOW(window), TRUE);
-    gtk_container_add(GTK_CONTAINER(window), button);
-
-    g_signal_connect(G_OBJECT(button), "clicked",
-                     G_CALLBACK(pdfscreenshot_find_window), window);
-
-    gtk_widget_show_all(GTK_WIDGET(window));
-}
-
-/* 
  * Ignore all BadWindow errors.
  */
 int
@@ -329,8 +269,6 @@ gtk_module_init(gint argc, char *argv[]) {
     type = "pdf";
 
     pdfscreenshot_atom = gdk_atom_intern("GTK_VECTOR_SCREENSHOT", FALSE);
-
-    // pdfscreenshot_window_create();
 
     gdk_window_add_filter(NULL, pdfscreenshot_event_filter, NULL);
 
