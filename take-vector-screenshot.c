@@ -136,7 +136,7 @@ pdfscreenshot_window_create()
 
     enable_delay = gtk_check_button_new_with_label("Delay by 5 seconds");
 
-    GtkWidget *take_screenshot = gtk_button_new_with_label("Take vector screenshot...");
+    GtkWidget *take_screenshot = gtk_button_new_with_label("Take screenshot");
     gtk_button_set_image (GTK_BUTTON(take_screenshot), icon);
     gtk_widget_set_can_focus(take_screenshot, False);
     gtk_button_set_image_position(GTK_BUTTON(take_screenshot), GTK_POS_TOP);
