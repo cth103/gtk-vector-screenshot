@@ -74,7 +74,7 @@ request_screenshot(GtkWidget *grab_window,
             xevent.format = 32;
             xevent.window  = selected_window;
             XSendEvent(gdk_x11_get_default_xdisplay(), selected_window, 0, 0, (XEvent *)&xevent);
-            return TRUE;
+            return FALSE;
         }
     }
 
@@ -89,7 +89,7 @@ request_screenshot(GtkWidget *grab_window,
     gtk_dialog_run (GTK_DIALOG (dialog));
     gtk_widget_destroy (dialog);
 
-    return TRUE;
+    return FALSE;
 }
 
 
