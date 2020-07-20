@@ -103,6 +103,32 @@ void pdfscreenshot_draw_preview(GtkWidget *widget, cairo_t *cr, gpointer window)
     gtk_widget_draw(window, cr);
 }
 
+void draw_pointer(cairo_t* cr, float x, float y, float size, float red, float green, float blue)
+{
+    static float const coords[] = {
+	    0, 0.820,
+	    0.175, 0.662,
+	    0.366, 1.000,
+	    0.522, 0.905,
+	    0.350, 0.595,
+	    0.596, 0.588,
+    };
+
+    cairo_save(cr);
+    cairo_translate(cr, x, y);
+    cairo_move_to(cr, 0, 0);
+    for (int i = 0; i < (sizeof(coords) / sizeof(float)); i += 2) {
+	    cairo_line_to(cr, coords[i] * size, coords[i+1] * size);
+    }
+    cairo_close_path(cr);
+    cairo_set_line_width(cr, 3);
+    cairo_set_source_rgb(cr, red, green, blue);
+    cairo_stroke_preserve(cr);
+    cairo_set_source_rgb(cr, 0, 0, 0);
+    cairo_fill(cr);
+    cairo_restore(cr);
+}
+
 /*
  * The main routine of saving a vector screenshot. Surprisingly simple. It is
  * parametized by the cairo surface creating function, as they all have the
@@ -116,6 +142,30 @@ void pdfscreenshot_draw_to_vector(GtkWidget *widget, const gchar *filename,
                            1.0 * gtk_widget_get_allocated_height(widget));
     cairo_t *cr = cairo_create(surface);
     gtk_widget_draw(widget, cr);
+
+    /* Find where the mouse pointer was */
+
+    int dummy;
+    unsigned int dummyU;
+    Window dummyW;
+    Window selected_window;
+
+    XQueryPointer(gdk_x11_get_default_xdisplay(),
+        gdk_x11_get_default_root_xwindow(),
+        &dummyW, &selected_window, &dummy, &dummy, &dummy, &dummy, &dummyU);
+
+    selected_window = Find_Client(gdk_x11_get_default_xdisplay(),
+        gdk_x11_get_default_root_xwindow(),
+        selected_window);
+
+    int x, y;
+    XQueryPointer(gdk_x11_get_default_xdisplay(),
+	selected_window,
+	&dummyW, &dummyW, &dummy, &dummy, &x, &y, &dummyU);
+
+    draw_pointer(cr, x - 0.5, y - 0.8, 18, 0.8, 0.8, 0.8);
+    draw_pointer(cr, x, y, 16, 1, 1, 1);
+
     cairo_destroy(cr);
     cairo_surface_destroy(surface);
 }
@@ -130,6 +180,7 @@ void pdfscreenshot_draw_to_png(GtkWidget *widget, const gchar *filename) {
             gtk_widget_get_allocated_height(widget));
     cairo_t *cr = cairo_create(surface);
     gtk_widget_draw(widget, cr);
+
     cairo_destroy(cr);
     cairo_surface_write_to_png(surface, filename);
     cairo_surface_destroy(surface);
